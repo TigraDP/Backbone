@@ -166,7 +166,7 @@ newUserCollection.slice(0, 1);
 
 Backbone provides powerful collection filtering tools. 
 
-The "filter" method allows you to get an array of all models which satisfy the filtering function.
+The "filter" method allows you to get an array of all models which satisfy the filtering function criteria.
 
 newUserCollection.filter(user => user.get('age') > 18); 
 
@@ -174,7 +174,7 @@ newUserCollection.filter(user => user.get('age') > 18);
 
 The "find" method works similarly, but returns only the first one that matches the filter criteria and stop iterating the collection.
 
-The "where" and "findWhere" method works similarly, but filtered by Key-value pairs are listed in the properties.
+The "where" and "findWhere" method works similarly, but filters by key-value pairs listed in the properties.
 
 newUserCollection.where({ name: 'Vasya', age: 33 })
 
@@ -186,7 +186,7 @@ newUserCollection.findWhere({ name: 'Vasya', age: 33 })
 
 If no items pass the filter criteria, these methods will return "undefined".
 
-When it is necessary to exclude some elements from the list, use the method "reject", to get an array without of models which satisfy the filtering function.
+When it is necessary to exclude some elements from the list, use the method "reject", to get an array without models, which satisfy the filtering function criteria.
 
 newUserCollection.reject(user => user.get('age') > 18);
 
@@ -199,7 +199,7 @@ newUserCollection.reject(user => user.get('age') > 18);
 
 When we just need to check the collection elements for compliance with a specific criterion, appropriate to use "every" or "some".
 
-"every" will return "true" if all values from collection pass the truth test, "some" will return "true" if any of the values pass the truth test. Otherwise will return "false".
+"every" will return "true" if all models from collection pass the acceptance criteria, "some" will return "true" if any of the models pass it. Otherwise they return "false".
 
 newUserCollection.every(user => user.get('age') > 18);
 
@@ -210,7 +210,7 @@ newUserCollection.some(user => user.get('age') > 18);
 *will return "true".
 
 
-Also there is another useful feature that you should not forget - "contains". It returns true if collection contains an element equivalent to value. For example, we can check if a model exists in the collection.
+There is also another useful feature that you should not forget - "contains". It returns “true” if collection contains an element equivalent to value. For example, we can check if a model exists in the collection.
 
 newUserCollection.contains(user1);
 
@@ -220,26 +220,28 @@ newUserCollection.contains(user1);
 
 "invoke", "map", "each", "pluck"
 
-Very often we need to apply some method to all elements of the collection. In this case, the "invoke" method comes to the rescue.
+Very often, we need to run some method of each model in the collection. In this case, the "invoke" method comes to the rescue.
 
-When "invoke" is called, it is necessary to pass the executable method and the necessary arguments to it. "Invoke" will iterate over all the elements of the collection and execute the passed function on each element. 
-Returns an array of methods execution results
+When "invoke" is called, it is necessary to pass the executable method name and the necessary arguments to it. "Invoke" will iterate over all the elements of the collection and execute the passed method on each model. 
+Returns an array of methods execution results.
 
 newUserCollection.invoke('set', { company: 'SoftServe' });
-If we need to get an array that represents each model of the collection we can use "map" method.
+If we need to get an array that represents each model of the collection, we can use "map" method.
 
-For that to create a "representative" we can use an existing function or describe it inside the method.
+For that to create a "representative" we must pass a “parsing” function which returns a representative based on model from collection:
 
 newUserCollection.map(model => {
 	if (model.get('company') === SoftServe) {
-		model.set({ 'bonus': 1000 });
+		return { bonus: 1000 };
 	}
+	
+	return { bonus: 10 };
 });
 
 This method produces a new array of modified values.
 If we need to modify the original collection (for example, for a call chain), we should use "each" method.
 
-In the case when we need to get the value of a attribute of all elements of the collection, it is advisable to use the "pluck" method. 
+In the case when we need to get the value of an attribute of all elements of the collection, it is advisable to use the "pluck" method. 
 
 newUserCollection.pluck('name');
 
@@ -252,7 +254,7 @@ newUserCollection.sortBy('age');
 
 In order to always keep the collection sorted by the desired value, you need to use the "comparator" method. 
 
-The "comparator"  is nothing more than a description of how the collection should behave after any changes, in order to always support the necessary sorting of models.
+The "comparator" is nothing more than a description of how the collection should behave after any changes, in order to always support the necessary sorting of models.
 It can be described during the creation of the collection.
 
 
@@ -263,8 +265,11 @@ UserCollection = Backbone.Collection.extend({
 });
 
 The comparator can be defined with a single argument, or two arguments. In the case with one argument, the function returns a numeric or string value by which the model should be ordered relative to others. 
-In the case with two arguments returns -1 if the first model should come before the second, 0 if they are of the same rank and 1 if the first model should come after.
-Also the comparator can be defined as a string indicating the attribute to sort by.
+In the case with two arguments returns:
+-1 if the first model should come before the second
+0 if they are of the same rank
+1 if the first model should come after.
+The comparator can also be defined as a string indicating the attribute to sort by as alternative to the method “sortBy”.
 
 "Sort" force a collection to re-sort itself.
 
